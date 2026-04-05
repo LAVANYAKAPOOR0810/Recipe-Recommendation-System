@@ -143,6 +143,20 @@
         .fade-in-up {
             animation: fadeInUp 0.6s ease forwards;
         }
+
+
+        .navbar .btn {
+    border-radius: 12px;
+    padding: 8px 18px;
+    transition: all 0.3s ease;
+}
+
+.navbar .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+
     </style>
 </head>
 <body>
@@ -156,6 +170,26 @@
                 <p class="lead text-muted mb-0">Get personalized recipe recommendations based on your nutritional preferences</p>
             </div>
             
+            <nav class="navbar navbar-expand-lg mb-4 glass-card px-4 py-3">
+                <div class="container-fluid">
+                    <h4 class="mb-0 fw-bold text-dark">
+                        🍽 Recipe AI
+                    </h4>
+            
+                    <div class="ms-auto d-flex gap-3">
+                        <a href="/cookbook" class="btn btn-outline-dark fw-semibold">
+                            ❤️ Cookbook
+                        </a>
+            
+                        <a href="/logout" class="btn btn-danger fw-semibold">
+                            🚪 Logout
+                        </a>
+                    </div>
+                </div>
+            </nav>
+
+
+
             <form method="POST">
                 <div class="row g-4">
                     <div class="col-lg-3 col-md-6">
@@ -217,8 +251,8 @@
             <div class="row g-4">
                 {% for recipe in recommendations %}
                 <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12">
-                    <div class="recipe-card h-100">
-                        <div class="position-relative overflow-hidden">
+                    <div class="recipe-card h-100"
+                    onclick="openRecipe('{{ recipe.recipe_name }}', `{{ recipe.ingredients_list }}`)">                        <div class="position-relative overflow-hidden">
                             <img src="{{ recipe.image_url }}" 
                                  class="recipe-image" 
                                  alt="{{ recipe.recipe_name }}"
@@ -255,15 +289,20 @@
                                 </div>
                             </div>
                             
-                            <button class="btn btn-success w-100 mt-3 fw-semibold"
+                            <!-- <button class="btn btn-success w-100 mt-3 fw-semibold"
                             onclick="saveRecipe(
                                 '{{ recipe.recipe_name }}',
                                 `{{ recipe.ingredients_list }}`,
                                 '{{ recipe.image_url }}'
                             )">
                             <i class="fas fa-heart me-2"></i>Add to Cookbook
-                        </button>                                
-                            </button>
+                        </button>  
+                        -->
+                        <button class="btn btn-success w-100 mt-3 fw-semibold"
+                        onclick="saveRecipe('{{ recipe.recipe_name }}', `{{ recipe.ingredients_list }}`, '{{ recipe.image_url }}')">
+                            <i class="fas fa-heart me-2"></i>Add to Cookbook
+                        </button>
+                        
                         </div>
                     </div>
                 </div>
@@ -295,24 +334,54 @@
 
 
 
-        function saveRecipe(name, ingredients, image) {
-    let savedRecipes = JSON.parse(localStorage.getItem("cookbook")) || [];
+//         function saveRecipe(name, ingredients, image) {
+//     let savedRecipes = JSON.parse(localStorage.getItem("cookbook")) || [];
 
-    // Avoid duplicates
-    if (savedRecipes.some(r => r.name === name)) {
-        alert("Already saved!");
-        return;
-    }
+//     // Avoid duplicates
+//     if (savedRecipes.some(r => r.name === name)) {
+//         alert("Already saved!");
+//         return;
+//     }
 
-    savedRecipes.push({
-        name: name,
-        ingredients: ingredients,
-        image: image
-    });
+//     savedRecipes.push({
+//         name: name,
+//         ingredients: ingredients,
+//         image: image
+//     });
 
-    localStorage.setItem("cookbook", JSON.stringify(savedRecipes));
+//     localStorage.setItem("cookbook", JSON.stringify(savedRecipes));
 
-    alert("Saved to Cookbook ❤️");
+//     alert("Saved to Cookbook ❤️");
+// }
+
+function saveRecipe(name, ingredients, image) {
+    fetch('/save_recipe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, ingredients, image })
+    })
+    .then(res => res.json())
+    .then(data => alert(data.message));
+}
+
+
+
+<div class="modal fade" id="recipeModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content p-4">
+      <h3 id="modalTitle"></h3>
+      <p id="modalIngredients"></p>
+    </div>
+  </div>
+</div>
+
+
+function openRecipe(name, ingredients) {
+    document.getElementById("modalTitle").innerText = name;
+    document.getElementById("modalIngredients").innerText = ingredients;
+
+    let modal = new bootstrap.Modal(document.getElementById('recipeModal'));
+    modal.show();
 }
 
     </script>
