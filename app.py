@@ -147,8 +147,11 @@ def home():
             print("🔥 ERROR:", e)
             return f"Error occurred: {e}"
 
-    return render_template('index.html', recommendations=recommendations)
-
+    return render_template(
+        "index.html",
+        recommendations=recommendations,
+        form_data=request.form
+    )
 
 
 # ======================
