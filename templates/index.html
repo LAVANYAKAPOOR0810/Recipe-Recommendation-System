@@ -252,8 +252,8 @@
                 {% for recipe in recommendations %}
                 <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12">
                     <div class="recipe-card h-100"
-                    onclick="openRecipe('{{ recipe.recipe_name }}', `{{ recipe.ingredients_list }}`)">                        <div class="position-relative overflow-hidden">
-                            <img src="{{ recipe.image_url }}" 
+                    onclick="window.location.href='/recipe/{{ recipe.recipe_name | urlencode }}'" >
+                    <div>                          <img src="{{ recipe.image_url }}" 
                                  class="recipe-image" 
                                  alt="{{ recipe.recipe_name }}"
                                  onerror="this.src='https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&h=240&fit=crop'">
@@ -299,7 +299,7 @@
                         </button>  
                         -->
                         <button class="btn btn-success w-100 mt-3 fw-semibold"
-                        onclick="saveRecipe('{{ recipe.recipe_name }}', `{{ recipe.ingredients_list }}`, '{{ recipe.image_url }}')">
+                        onclick="event.stopPropagation(); saveRecipe('{{ recipe.recipe_name }}', `{{ recipe.ingredients_list }}`, '{{ recipe.image_url }}')">
                             <i class="fas fa-heart me-2"></i>Add to Cookbook
                         </button>
                         
@@ -366,15 +366,6 @@ function saveRecipe(name, ingredients, image) {
 
 
 
-<div class="modal fade" id="recipeModal" tabindex="-1">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content p-4">
-      <h3 id="modalTitle"></h3>
-      <p id="modalIngredients"></p>
-    </div>
-  </div>
-</div>
-
 
 function openRecipe(name, ingredients) {
     document.getElementById("modalTitle").innerText = name;
@@ -385,5 +376,14 @@ function openRecipe(name, ingredients) {
 }
 
     </script>
+
+<div class="modal fade" id="recipeModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content p-4">
+        <h3 id="modalTitle"></h3>
+        <p id="modalIngredients"></p>
+      </div>
+    </div>
+  </div>
 </body>
 </html> 
