@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Recipe Recommender</title>
+    <title>AlgoChef </title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <style>
         :root {
             --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --card-gradient: rgba(255, 255, 255, 0.95);
+            --card-gradient: rgba(255, 255, 255, 0.6);
             --success-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
         }
         
         body {
-            background: var(--bg-gradient);
+            background: transparent;
             min-height: 100vh;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
@@ -157,15 +157,67 @@
 }
 
 
+
+
+/* 🎬 Background Video */
+#bg-video {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -10;
+}
+
+/* 🌫 Overlay (for readability) */
+.video-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: -5;
+}
+
+/* 🧼 Make background transparent */
+/* body {
+    background: transparent !important;
+} */
+
+.container {
+    position: relative;
+    z-index: 1;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    background: transparent !important;
+}
+
+
     </style>
 </head>
-<body>
+
+    <body>
+
+        <!-- 🎬 Background Video -->
+        <video autoplay muted loop playsinline id="bg-video">
+            <source src="{{ url_for('static', filename='video/bg.mp4') }}" type="video/mp4">
+        </video>
+    
+        <!-- 🌫 Overlay -->
+        <div class="video-overlay"></div>
+
+
     <div class="container py-5 px-3 px-lg-0">
         <!-- MAIN FORM -->
         <div class="glass-card p-5 mb-5 mx-auto fade-in-up" style="max-width: 1000px;">
             <div class="text-center mb-5">
                 <h1 class="display-4 fw-bold section-title mb-3">
-                    <i class="fas fa-brain me-3"></i>AI Recipe Recommender
+                    <i class="fas fa-brain me-3"></i>AlgoChef
                 </h1>
                 <p class="lead text-muted mb-0">Get personalized recipe recommendations based on your nutritional preferences</p>
             </div>
@@ -194,36 +246,36 @@
                 <div class="row g-4">
                     <div class="col-lg-3 col-md-6">
                         <label class="form-label fw-semibold">Calories</label>
-                        <input type="number" class="form-control" name="calories" min="0" step="any" required>
+                        <input type="number" class="form-control" name="calories" min="0" step="any" value="{{ form_data.get('calories', '') }}"required>
                     </div>
                     <div class="col-lg-3 col-md-6">
                         <label class="form-label fw-semibold">Fat (g)</label>
-                        <input type="number" class="form-control" name="fat" min="0" step="any" required>
+                        <input type="number" class="form-control" name="fat" min="0" step="any" value="{{ form_data.get('fat', '') }}"required>
                     </div>
                     <div class="col-lg-3 col-md-6">
                         <label class="form-label fw-semibold">Carbs (g)</label>
-                        <input type="number" class="form-control" name="carbohydrates" min="0" step="any" required>
+                        <input type="number" class="form-control" name="carbohydrates" min="0" step="any" value="{{ form_data.get('carbohydrates', '') }}" required>
                     </div>
                     <div class="col-lg-3 col-md-6">
                         <label class="form-label fw-semibold">Protein (g)</label>
-                        <input type="number" class="form-control" name="protein" min="0" step="any" required>
+                        <input type="number" class="form-control" name="protein" min="0" step="any" value="{{ form_data.get('protein', '') }}" required>
                     </div>
                     <div class="col-lg-3 col-md-6">
                         <label class="form-label fw-semibold">Cholesterol</label>
-                        <input type="number" class="form-control" name="cholesterol" min="0" step="any" required>
+                        <input type="number" class="form-control" name="cholesterol" min="0" step="any" value="{{ form_data.get('cholesterol', '') }}" required>
                     </div>
                     <div class="col-lg-3 col-md-6">
                         <label class="form-label fw-semibold">Sodium (mg)</label>
-                        <input type="number" class="form-control" name="sodium" min="0" step="any" required>
+                        <input type="number" class="form-control" name="sodium" min="0" step="any" value="{{ form_data.get('sodium', '') }}" required>
                     </div>
                     <div class="col-lg-3 col-md-6">
                         <label class="form-label fw-semibold">Fiber (g)</label>
-                        <input type="number" class="form-control" name="fiber" min="0" step="any" required>
+                        <input type="number" class="form-control" name="fiber" min="0" step="any" value="{{ form_data.get('fiber', '') }}" required>
                     </div>
                     <div class="col-lg-3 col-md-6">
                         <label class="form-label fw-semibold">Ingredients</label>
                         <input type="text" class="form-control" name="ingredients" 
-                               placeholder="chicken, rice, veggies..." required>
+                               placeholder="chicken, rice, veggies..." value="{{ form_data.get('ingredients', '') }}" required>
                     </div>
                 </div>
                 
@@ -251,58 +303,71 @@
             <div class="row g-4">
                 {% for recipe in recommendations %}
                 <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12">
-                    <div class="recipe-card h-100"
-                    onclick="window.location.href='/recipe/{{ recipe.recipe_name | urlencode }}'" >
-                    <div>                          <img src="{{ recipe.image_url }}" 
-                                 class="recipe-image" 
-                                 alt="{{ recipe.recipe_name }}"
-                                 onerror="this.src='https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&h=240&fit=crop'">
+                    <div class="recipe-card h-100 position-relative"
+                        onclick="window.location.href='/recipe/{{ recipe.recipe_name | urlencode }}'">
+                
+                        <!-- IMAGE + OVERLAY -->
+                        <div class="position-relative">
+                            <img src="{{ recipe.image_url }}" 
+                                class="recipe-image"
+                                onerror="this.src='https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400'">
+                
+                            <!-- DARK GRADIENT -->
+                            <div class="position-absolute top-0 w-100 h-100"
+                                style="background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.7));">
+                            </div>
+                
+                            <!-- CALORIES BADGE -->
                             <div class="nutrition-badge cal-{{ 'low' if recipe.get('calories', 500) < 400 else 'medium' if recipe.get('calories', 500) < 600 else 'high' }}">
-                                {{ recipe.get('calories', 500)|int }} kcal
+                                🔥 {{ recipe.get('calories', 500)|int }} kcal
+                            </div>
+                
+                            <!-- MATCH SCORE -->
+                            <div class="position-absolute bottom-0 start-0 p-3 text-white">
+                                <small>AI Match</small>
+                                <h5 class="mb-0 fw-bold">{{ 95 - loop.index * 3 }}%</h5>
                             </div>
                         </div>
-                        
+                
+                        <!-- CONTENT -->
                         <div class="p-4">
-                            <h5 class="fw-bold mb-3">{{ recipe.recipe_name }}</h5>
-                            <p class="text-muted small mb-4" style="line-height: 1.5;">
-                                {{ recipe.ingredients_list[:160] }}{% if recipe.ingredients_list|length > 160 %}...{% endif %}
+                
+                            <h5 class="fw-bold mb-2">{{ recipe.recipe_name }}</h5>
+                
+                            <!-- TAGS -->
+                            <div class="mb-3">
+                                {% if recipe.get('protein', 0) > 20 %}
+                                    <span class="badge bg-success me-1">💪 High Protein</span>
+                                {% endif %}
+                                {% if recipe.get('calories', 500) < 400 %}
+                                    <span class="badge bg-info me-1">🥗 Low Cal</span>
+                                {% endif %}
+                                <span class="badge bg-dark">🍴 Quick Meal</span>
+                            </div>
+                
+                            <!-- INGREDIENT PREVIEW -->
+                            <p class="text-muted small mb-3" style="line-height: 1.5;">
+                                {{ recipe.ingredients_list[:120] }}...
                             </p>
-                            
-                            <div class="nutrition-grid">
-                                <div class="row text-center g-3">
-                                    <div class="col-3">
-                                        <div class="fw-bold text-success fs-5">{{ recipe.get('protein', 0)|int }}g</div>
-                                        <small class="text-muted">Protein</small>
-                                    </div>
-                                    <div class="col-3">
-                                        <div class="fw-bold text-warning fs-5">{{ recipe.get('fat', 0)|int }}g</div>
-                                        <small class="text-muted">Fat</small>
-                                    </div>
-                                    <div class="col-3">
-                                        <div class="fw-bold text-primary fs-5">{{ recipe.get('carbohydrates', 0)|int }}g</div>
-                                        <small class="text-muted">Carbs</small>
-                                    </div>
-                                    <div class="col-3">
-                                        <div class="fw-bold text-info fs-5">{{ recipe.get('fiber', 0)|int }}g</div>
-                                        <small class="text-muted">Fiber</small>
-                                    </div>
+                
+                            <!-- NUTRITION BAR STYLE -->
+                            <div class="mb-3">
+                                <small class="text-muted">Protein</small>
+                                <div class="progress mb-2" style="height:6px;">
+                                    <div class="progress-bar bg-success" style="width: {{ recipe.get('protein',0) }}%"></div>
+                                </div>
+                
+                                <small class="text-muted">Carbs</small>
+                                <div class="progress mb-2" style="height:6px;">
+                                    <div class="progress-bar bg-primary" style="width: {{ recipe.get('carbohydrates',0) }}%"></div>
                                 </div>
                             </div>
-                            
-                            <!-- <button class="btn btn-success w-100 mt-3 fw-semibold"
-                            onclick="saveRecipe(
-                                '{{ recipe.recipe_name }}',
-                                `{{ recipe.ingredients_list }}`,
-                                '{{ recipe.image_url }}'
-                            )">
-                            <i class="fas fa-heart me-2"></i>Add to Cookbook
-                        </button>  
-                        -->
-                        <button class="btn btn-success w-100 mt-3 fw-semibold"
-                        onclick="event.stopPropagation(); saveRecipe('{{ recipe.recipe_name }}', `{{ recipe.ingredients_list }}`, '{{ recipe.image_url }}')">
-                            <i class="fas fa-heart me-2"></i>Add to Cookbook
-                        </button>
-                        
+                
+                            <!-- BUTTON -->
+                            <button class="btn btn-success w-100 fw-semibold"
+                                onclick="event.stopPropagation(); saveRecipe('{{ recipe.recipe_name }}', `{{ recipe.ingredients_list }}`, '{{ recipe.image_url }}')">
+                                ❤️ Save to Cookbook
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -386,4 +451,9 @@ function openRecipe(name, ingredients) {
     </div>
   </div>
 </body>
+
+
+
+<!-- <div class="video-overlay"></div> -->
+
 </html> 

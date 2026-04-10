@@ -3,15 +3,17 @@ from flask import redirect, url_for, session
 
 
 
-
 from flask import Flask, render_template, request, redirect, session, url_for
 from flask_sqlalchemy import SQLAlchemy
+app = Flask(__name__, static_folder='static')
+
+
 import pandas as pd
 import pickle
 import numpy as np
 import os
 
-app = Flask(__name__)
+# app = Flask(__name__)
 
 # 🔐 Secret Key (used for session security)
 app.secret_key = "secret123"
@@ -99,16 +101,17 @@ def register():
 # ======================
 # 🏠 HOME (RECOMMENDER)
 # ======================
-
 @app.route('/', methods=['GET', 'POST'])
 def home():
     if 'user_id' not in session:
         return redirect('/login')
 
     recommendations = []
+    form_data = {}
 
     if request.method == 'POST':
         try:
+            # 🔹 Get input
             calories = float(request.form['calories'])
             fat = float(request.form['fat'])
             carbs = float(request.form['carbohydrates'])
@@ -126,33 +129,41 @@ def home():
 
             final_input = np.hstack((numeric_scaled, ingredients_vec))
 
-            # 🔹 Predict
+            # 🔥 THIS WAS MISSING
             distances, indices = model.kneighbors(final_input)
 
             # 🔹 Get recipes
             for i in indices[0]:
                 recipe = recipes_data.iloc[i]
                 recommendations.append({
-    "recipe_name": recipe['recipe_name'],
-    "ingredients_list": recipe['ingredients_list'],
-    "image_url": recipe.get('image_url', ''),
-    "calories": recipe.get('calories', 0),
-    "protein": recipe.get('protein', 0),
-    "fat": recipe.get('fat', 0),
-    "carbohydrates": recipe.get('carbohydrates', 0),
-    "fiber": recipe.get('fiber', 0)
-})
+                    "recipe_name": str(recipe['recipe_name']),
+                    "ingredients_list": str(recipe['ingredients_list']),
+                    "image_url": str(recipe.get('image_url', '')),
+
+                    "calories": int(recipe.get('calories', 0)),
+                    "protein": float(recipe.get('protein', 0)),
+                    "fat": float(recipe.get('fat', 0)),
+                    "carbohydrates": float(recipe.get('carbohydrates', 0)),
+                    "fiber": float(recipe.get('fiber', 0))
+                })
+
+            # ✅ Save in session (for back button)
+            session['recommendations'] = recommendations
+            session['form_data'] = request.form.to_dict()
 
         except Exception as e:
-            print("🔥 ERROR:", e)
-            return f"Error occurred: {e}"
+            return f"Error: {e}"
+
+    else:
+        # 🔹 Load previous data
+        recommendations = session.get('recommendations', [])
+        form_data = session.get('form_data', {})
 
     return render_template(
         "index.html",
         recommendations=recommendations,
-        form_data=request.form
+        form_data=form_data
     )
-
 
 # ======================
 # ❤️ SAVE RECIPE
@@ -250,6 +261,26 @@ def generate_instructions(name, ingredients):
     )
 
     return response.choices[0].message.content
+
+
+@app.route('/delete_recipe/<int:id>', methods=['POST'])
+def delete_recipe(id):
+    if 'user_id' not in session:
+        return jsonify({"message": "Login required ❌"})
+
+    recipe = Cookbook.query.get(id)
+
+    # 🔐 Safety check (VERY IMPORTANT)
+    if recipe and recipe.user_id == session['user_id']:
+        db.session.delete(recipe)
+        db.session.commit()
+        return jsonify({"message": "Removed from Cookbook 🗑️"})
+
+    return jsonify({"message": "Unauthorized ❌"})
+
+
+
+
 
 # ======================
 # 🚀 RUN APP
