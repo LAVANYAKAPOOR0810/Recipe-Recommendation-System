@@ -34,11 +34,14 @@ class User(db.Model):
     password = db.Column(db.String(100))
 
 
+
+
 class Cookbook(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer)
     recipe_name = db.Column(db.String(200))
     ingredients = db.Column(db.Text)
+    image = db.Column(db.String(500))   # ✅ ADD THIS
 
 
 # ======================
@@ -150,6 +153,7 @@ def home():
             # ✅ Save in session (for back button)
             session['recommendations'] = recommendations
             session['form_data'] = request.form.to_dict()
+            return redirect(url_for('home'))   # 🔥 THIS FIXES YOUR ISSUE
 
         except Exception as e:
             return f"Error: {e}"
@@ -178,10 +182,20 @@ def save_recipe():
 
     data = request.get_json()
 
+    existing = Cookbook.query.filter_by(
+        user_id=session['user_id'],
+        recipe_name=data.get('name')
+    ).first()
+
+    if existing:
+        return jsonify({"message": "Already saved ⚠️"})
+
+
     new_entry = Cookbook(
         user_id=session['user_id'],
-        recipe_name=data['name'],
-        ingredients=data['ingredients']
+        recipe_name=data.get('name'),
+        ingredients=data.get('ingredients'),
+        image=data.get('image')   # ✅ ADD THIS
     )
 
     db.session.add(new_entry)
@@ -220,16 +234,49 @@ def logout():
 #     )
 
 
+# @app.route('/recipe/<name>')
+# def recipe_detail(name):
+#     if 'user_id' not in session:
+#         return redirect('/login')
+
+#     recipe = recipes_data[recipes_data['recipe_name'] == name].iloc[0]
+
+#     ingredients = recipe['ingredients_list']
+
+#     # 🔥 SIMPLE AI INSTRUCTIONS (no API yet)
+#     instructions = f"""
+#     1. Prepare all ingredients: {ingredients}
+#     2. Heat a pan and add oil.
+#     3. Cook ingredients step by step.
+#     4. Add spices and mix well.
+#     5. Simmer until cooked properly.
+#     6. Serve hot and enjoy!
+#     """
+
+#     return render_template(
+#         'recipe_detail.html',
+#         recipe=recipe,
+#         instructions=instructions
+#     )
+
+from urllib.parse import unquote
+
 @app.route('/recipe/<name>')
 def recipe_detail(name):
     if 'user_id' not in session:
         return redirect('/login')
 
-    recipe = recipes_data[recipes_data['recipe_name'] == name].iloc[0]
+    name = unquote(name)
+
+    filtered = recipes_data[recipes_data['recipe_name'] == name]
+
+    if filtered.empty:
+        return "Recipe not found ❌"
+
+    recipe = filtered.iloc[0]
 
     ingredients = recipe['ingredients_list']
 
-    # 🔥 SIMPLE AI INSTRUCTIONS (no API yet)
     instructions = f"""
     1. Prepare all ingredients: {ingredients}
     2. Heat a pan and add oil.
@@ -244,6 +291,8 @@ def recipe_detail(name):
         recipe=recipe,
         instructions=instructions
     )
+
+
 
 # from openai import OpenAI
 # client = OpenAI()
