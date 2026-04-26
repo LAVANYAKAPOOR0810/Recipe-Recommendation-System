@@ -1,9 +1,9 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AlgoChef </title>
+    <title>AlgoChef</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <style>
@@ -106,21 +106,6 @@
         .cal-medium { background: linear-gradient(45deg, #fdcb6e, #e17055); color: white; }
         .cal-high { background: linear-gradient(45deg, #e74c3c, #c0392b); color: white; }
         
-        .nutrition-grid {
-            background: linear-gradient(145deg, #f8f9fa, #e9ecef);
-            border-radius: 12px;
-            padding: 1rem;
-            margin-top: 1rem;
-        }
-        
-        .no-results {
-            min-height: 400px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        
         .section-title {
             background: var(--success-gradient);
             -webkit-background-clip: text;
@@ -144,73 +129,55 @@
             animation: fadeInUp 0.6s ease forwards;
         }
 
-
         .navbar .btn {
-    border-radius: 12px;
-    padding: 8px 18px;
-    transition: all 0.3s ease;
-}
+            border-radius: 12px;
+            padding: 8px 18px;
+            transition: all 0.3s ease;
+        }
 
-.navbar .btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-}
+        .navbar .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
 
+        #bg-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -10;
+        }
 
+        .video-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: -5;
+        }
 
+        .container {
+            position: relative;
+            z-index: 1;
+        }
 
-/* 🎬 Background Video */
-#bg-video {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    z-index: -10;
-}
-
-/* 🌫 Overlay (for readability) */
-.video-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.3);
-    z-index: -5;
-}
-
-/* 🧼 Make background transparent */
-/* body {
-    background: transparent !important;
-} */
-
-.container {
-    position: relative;
-    z-index: 1;
-}
-
-html, body {
-    margin: 0;
-    padding: 0;
-    background: transparent !important;
-}
-
-
+        html, body {
+            margin: 0;
+            padding: 0;
+            background: transparent !important;
+        }
     </style>
 </head>
-
-    <body>
-
-        <!-- 🎬 Background Video -->
-        <video autoplay muted loop playsinline id="bg-video">
-            <source src="{{ url_for('static', filename='video/bg.mp4') }}" type="video/mp4">
-        </video>
-    
-        <!-- 🌫 Overlay -->
-        <div class="video-overlay"></div>
-
+<body>
+    <!-- Background Video -->
+    <video autoplay muted loop playsinline id="bg-video">
+        <source src="{{ url_for('static', filename='video/bg.mp4') }}" type="video/mp4">
+    </video>
+    <div class="video-overlay"></div>
 
     <div class="container py-5 px-3 px-lg-0">
         <!-- MAIN FORM -->
@@ -224,33 +191,23 @@ html, body {
             
             <nav class="navbar navbar-expand-lg mb-4 glass-card px-4 py-3">
                 <div class="container-fluid">
-                    <h4 class="mb-0 fw-bold text-dark">
-                        🍽 Recipe AI
-                    </h4>
-            
+                    <h4 class="mb-0 fw-bold text-dark">🍽 Recipe AI</h4>
                     <div class="ms-auto d-flex gap-3">
-                        <a href="/cookbook" class="btn btn-outline-dark fw-semibold">
-                            ❤️ Cookbook
-                        </a>
-            
-                        <a href="/logout" class="btn btn-danger fw-semibold">
-                            🚪 Logout
-                        </a>
+                        <a href="/cookbook" class="btn btn-outline-dark fw-semibold">❤️ Cookbook</a>
+                        <a href="/logout" class="btn btn-danger fw-semibold">🚪 Logout</a>
                     </div>
                 </div>
             </nav>
-
-
 
             <form method="POST">
                 <div class="row g-4">
                     <div class="col-lg-3 col-md-6">
                         <label class="form-label fw-semibold">Calories</label>
-                        <input type="number" class="form-control" name="calories" min="0" step="any" value="{{ form_data.get('calories', '') }}"required>
+                        <input type="number" class="form-control" name="calories" min="0" step="any" value="{{ form_data.get('calories', '') }}" required>
                     </div>
                     <div class="col-lg-3 col-md-6">
                         <label class="form-label fw-semibold">Fat (g)</label>
-                        <input type="number" class="form-control" name="fat" min="0" step="any" value="{{ form_data.get('fat', '') }}"required>
+                        <input type="number" class="form-control" name="fat" min="0" step="any" value="{{ form_data.get('fat', '') }}" required>
                     </div>
                     <div class="col-lg-3 col-md-6">
                         <label class="form-label fw-semibold">Carbs (g)</label>
@@ -287,7 +244,7 @@ html, body {
             </form>
         </div>
 
-        <!-- RESULTS - ONLY SHOWS AFTER POST REQUEST (your app.py handles this) -->
+        <!-- RESULTS -->
         {% if recommendations %}
         <div class="glass-card p-5 mb-5 mx-auto fade-in-up" style="max-width: 1200px;">
             <div class="d-flex justify-content-between align-items-center mb-5">
@@ -295,83 +252,80 @@ html, body {
                     <i class="fas fa-fire-alt me-3"></i>
                     Top {{ recommendations|length }} Matches Found!
                 </h2>
-                <a href="/" class="btn btn-outline-primary px-4">
+                <a href="/clear_search" class="btn btn-outline-primary px-4">
                     <i class="fas fa-redo me-2"></i>New Search
                 </a>
             </div>
             
             <div class="row g-4">
                 {% for recipe in recommendations %}
-                <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12">
-                    <div class="recipe-card h-100 position-relative"
-                        onclick="window.location.href='/recipe/{{ recipe.recipe_name | urlencode }}'">
-                
-                        <!-- IMAGE + OVERLAY -->
-                        <div class="position-relative">
-                            <img src="{{ recipe.image_url }}" 
-                                class="recipe-image"
-                                onerror="this.src='https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400'">
-                
-                            <!-- DARK GRADIENT -->
-                            <div class="position-absolute top-0 w-100 h-100"
-                                style="background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.7));">
-                            </div>
-                
-                            <!-- CALORIES BADGE -->
-                            <div class="nutrition-badge cal-{{ 'low' if recipe.get('calories', 500) < 400 else 'medium' if recipe.get('calories', 500) < 600 else 'high' }}">
-                                🔥 {{ recipe.get('calories', 500)|int }} kcal
-                            </div>
-                
-                            <!-- MATCH SCORE -->
-                            <div class="position-absolute bottom-0 start-0 p-3 text-white">
-                                <small>AI Match</small>
-                                <h5 class="mb-0 fw-bold">{{ 95 - loop.index * 3 }}%</h5>
-                            </div>
-                        </div>
-                
-                        <!-- CONTENT -->
-                        <div class="p-4">
-                
-                            <h5 class="fw-bold mb-2">{{ recipe.recipe_name }}</h5>
-                
-                            <!-- TAGS -->
-                            <div class="mb-3">
-                                {% if recipe.get('protein', 0) > 20 %}
-                                    <span class="badge bg-success me-1">💪 High Protein</span>
-                                {% endif %}
-                                {% if recipe.get('calories', 500) < 400 %}
-                                    <span class="badge bg-info me-1">🥗 Low Cal</span>
-                                {% endif %}
-                                <span class="badge bg-dark">🍴 Quick Meal</span>
-                            </div>
-                
-                            <!-- INGREDIENT PREVIEW -->
-                            <p class="text-muted small mb-3" style="line-height: 1.5;">
-                                {{ recipe.ingredients_list[:120] }}...
-                            </p>
-                
-                            <!-- NUTRITION BAR STYLE -->
-                            <div class="mb-3">
-                                <small class="text-muted">Protein</small>
-                                <div class="progress mb-2" style="height:6px;">
-                                    <div class="progress-bar bg-success" style="width: {{ recipe.get('protein',0) }}%"></div>
-                                </div>
-                
-                                <small class="text-muted">Carbs</small>
-                                <div class="progress mb-2" style="height:6px;">
-                                    <div class="progress-bar bg-primary" style="width: {{ recipe.get('carbohydrates',0) }}%"></div>
-                                </div>
-                            </div>
-                
-                            <!-- BUTTON -->
-                            <button class="btn btn-success w-100 fw-semibold"
-                                onclick="event.stopPropagation(); saveRecipe('{{ recipe.recipe_name }}', `{{ recipe.ingredients_list }}`, '{{ recipe.image_url }}')">
-                                ❤️ Save to Cookbook
-                            </button>
-                        </div>
-                    </div>
+<div class="col-xl-4 col-lg-6 col-md-6 col-sm-12">
+    <div class="recipe-card h-100">
+        <!-- Header with image and link -->
+        <div class="position-relative">
+            <a href="/recipe/{{ recipe.recipe_name | urlencode }}" class="stretched-link">
+                <img src="{{ recipe.image_url }}" 
+                     class="recipe-image"
+                     onerror="this.src='https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400'">
+                <!-- Dark gradient overlay -->
+                <div class="position-absolute top-0 w-100 h-100"
+                     style="background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.7)); z-index: 1;">
                 </div>
-                {% endfor %}
+                <!-- Nutrition badge -->
+                <div class="nutrition-badge cal-{{ 'low' if recipe.get('calories', 500) < 400 else 'medium' if recipe.get('calories', 500) < 600 else 'high' }}" style="z-index: 2;">
+                    🔥 {{ recipe.get('calories', 500)|int }} kcal
+                </div>
+                <!-- Match score -->
+                <div class="position-absolute bottom-0 start-0 p-3 text-white" style="z-index: 2;">
+                    <small>AI Match</small>
+                    <h5 class="mb-0 fw-bold">{{ 95 - loop.index * 3 }}%</h5>
+                </div>
+            </a>
+        </div>
+        
+        <!-- Content - NO stretched-link interference -->
+        <div class="p-4">
+            <h5 class="fw-bold mb-2">{{ recipe.recipe_name }}</h5>
+            
+            <!-- Tags -->
+            <div class="mb-3">
+                {% if recipe.get('protein', 0) > 20 %}
+                    <span class="badge bg-success me-1">💪 High Protein</span>
+                {% endif %}
+                {% if recipe.get('calories', 500) < 400 %}
+                    <span class="badge bg-info me-1">🥗 Low Cal</span>
+                {% endif %}
+                <span class="badge bg-dark">🍴 Quick Meal</span>
+            </div>
+            
+            <!-- Ingredients preview -->
+            <p class="text-muted small mb-3" style="line-height: 1.5;">
+                {{ recipe.ingredients_list[:120] }}...
+            </p>
+            
+            <!-- Nutrition bars -->
+            <div class="mb-3">
+                <small class="text-muted">Protein</small>
+                <div class="progress mb-2" style="height:6px;">
+                    <div class="progress-bar bg-success" style="width: {{ [recipe.get('protein',0), 100]|min }}%"></div>
+                </div>
+                <small class="text-muted">Carbs</small>
+                <div class="progress mb-2" style="height:6px;">
+                    <div class="progress-bar bg-primary" style="width: {{ [recipe.get('carbohydrates',0), 100]|min }}%"></div>
+                </div>
+            </div>
+            
+            <!-- ✅ PERFECT SAVE BUTTON -->
+            <button class="btn btn-success w-100 fw-semibold save-to-cookbook"
+                    data-name="{{ recipe.recipe_name | e }}"
+                    data-ingredients="{{ recipe.ingredients_list | e }}"
+                    data-image="{{ recipe.image_url | e }}">
+                ❤️ Save to Cookbook
+            </button>
+        </div>
+    </div>
+</div>
+{% endfor %}
             </div>
         </div>
         {% endif %}
@@ -379,7 +333,7 @@ html, body {
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Smooth animations
+        // Animations
         document.querySelectorAll('.glass-card, .recipe-card').forEach((el, index) => {
             el.style.opacity = '0';
             el.style.transform = 'translateY(20px)';
@@ -390,70 +344,77 @@ html, body {
             }, index * 100);
         });
         
-        // Form validation
-        document.querySelector('form').addEventListener('submit', function() {
+        // Form submit loading
+        document.querySelector('form')?.addEventListener('submit', function() {
             this.querySelector('button[type="submit"]').innerHTML = 
                 '<i class="fas fa-spinner fa-spin me-2"></i>Finding Recipes...';
         });
-        
 
-
-
-//         function saveRecipe(name, ingredients, image) {
-//     let savedRecipes = JSON.parse(localStorage.getItem("cookbook")) || [];
-
-//     // Avoid duplicates
-//     if (savedRecipes.some(r => r.name === name)) {
-//         alert("Already saved!");
-//         return;
-//     }
-
-//     savedRecipes.push({
-//         name: name,
-//         ingredients: ingredients,
-//         image: image
-//     });
-
-//     localStorage.setItem("cookbook", JSON.stringify(savedRecipes));
-
-//     alert("Saved to Cookbook ❤️");
-// }
-
-function saveRecipe(name, ingredients, image) {
-    fetch('/save_recipe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, ingredients, image })
-    })
-    .then(res => res.json())
-    .then(data => alert(data.message));
-}
-
-
-
-
-function openRecipe(name, ingredients) {
-    document.getElementById("modalTitle").innerText = name;
-    document.getElementById("modalIngredients").innerText = ingredients;
-
-    let modal = new bootstrap.Modal(document.getElementById('recipeModal'));
-    modal.show();
-}
-
+        // ✅ PERFECTLY WORKING SAVE TO COOKBOOK FUNCTION
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click handlers to all save buttons
+            document.querySelectorAll('.save-to-cookbook').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const name = this.dataset.name;
+                    const ingredients = this.dataset.ingredients;
+                    const image = this.dataset.image;
+                    
+                    // Show loading
+                    const originalText = this.innerHTML;
+                    this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Saving...';
+                    this.disabled = true;
+                    
+                    fetch('/save_recipe', {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: JSON.stringify({
+                            name: name,
+                            ingredients: ingredients,
+                            image: image
+                        })
+                    })
+                    .then(response => {
+                        if (!response.ok) throw new Error('Network error');
+                        return response.json();
+                    })
+                    .then(data => {
+                        alert(data.message);
+                        if (data.message.includes('Saved')) {
+                            this.innerHTML = '✅ Saved!';
+                            setTimeout(() => {
+                                this.innerHTML = originalText;
+                                this.disabled = false;
+                            }, 2000);
+                        } else {
+                            this.innerHTML = originalText;
+                            this.disabled = false;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Save error:', error);
+                        alert('Error saving recipe. Please try again.');
+                        this.innerHTML = originalText;
+                        this.disabled = false;
+                    });
+                });
+            });
+        });
     </script>
 
-<div class="modal fade" id="recipeModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content p-4">
-        <h3 id="modalTitle"></h3>
-        <p id="modalIngredients"></p>
-      </div>
+    <!-- Modal (if needed) -->
+    <div class="modal fade" id="recipeModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content p-4">
+                <h3 id="modalTitle"></h3>
+                <p id="modalIngredients"></p>
+            </div>
+        </div>
     </div>
-  </div>
 </body>
-
-
-
-<!-- <div class="video-overlay"></div> -->
-
-</html> 
+</html>

@@ -3,7 +3,7 @@
 <head>
     <title>My Cookbook</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <style>
         body {
             background: linear-gradient(135deg, #11998e, #38ef7d);
@@ -23,6 +23,7 @@
             border-radius: 18px;
             overflow: hidden;
             transition: 0.4s;
+            height: 100%;
         }
 
         .recipe-card:hover {
@@ -32,6 +33,7 @@
 
         .recipe-img {
             height: 200px;
+            width: 100%;
             object-fit: cover;
         }
 
@@ -46,69 +48,115 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
+
+        .empty-state {
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255,255,255,0.9);
+        }
     </style>
 </head>
 
 <body class="p-4">
+    <div class="container glass-card">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="title">❤️ My Saved Recipes ({{ recipes|length }})</h2>
+            <a href="/" class="btn btn-dark">⬅ Back to Search</a>
+        </div>
 
-<div class="container glass-card">
-
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="title">❤️ My Saved Recipes</h2>
-        <a href="/" class="btn btn-dark">⬅ Back</a>
-    </div>
-
-    <div class="row">
         {% if recipes %}
-            {% for recipe in recipes %}
-            <div class="col-md-4 mb-4">
-                <div class="card recipe-card">
-
-                    {% if recipe.image %}
-                        <img src="{{ recipe.image }}" class="recipe-img w-100">
-                    {% endif %}
-
-                    <div class="card-body">
-                        <h5 class="fw-bold">{{ recipe.recipe_name }}</h5>
-                        <p class="text-muted small">
-                            {{ (recipe.ingredients or '')[:100] }}                        </p>
-
-                        <button class="btn btn-danger w-100 btn-remove"
-                            onclick="deleteRecipe({{ recipe.id }})">
-                            🗑 Remove
-                        </button>
+            <div class="row g-4">
+                {% for recipe in recipes %}
+                <div class="col-md-4 col-sm-6 col-12">
+                    <div class="card recipe-card h-100">
+                        <!-- ✅ FIXED IMAGE DISPLAY -->
+                        <img src="{{ recipe.image or 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&h=200&fit=crop' }}" 
+                             class="recipe-img w-100" 
+                             alt="{{ recipe.recipe_name }}"
+                             onerror="this.src='https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&h=200&fit=crop'; this.onerror=null;">
+                        
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title fw-bold mb-2">{{ recipe.recipe_name }}</h5>
+                            <p class="card-text text-muted flex-grow-1 small" style="line-height: 1.4;">
+                                {{ (recipe.ingredients or 'No ingredients listed')[:120] }}...
+                            </p>
+                            
+                            <!-- ✅ FIXED DELETE BUTTON -->
+                            <button class="btn btn-danger w-100 btn-remove mt-auto"
+                                    onclick="deleteRecipe({{ recipe.id }})">
+                                <i class="fas fa-trash me-1"></i>Remove
+                            </button>
+                        </div>
                     </div>
                 </div>
+                {% endfor %}
             </div>
-            {% endfor %}
         {% else %}
-            <div class="text-center mt-5">
-                <h4>No recipes saved yet 😢</h4>
-                <p class="text-muted">Go find some delicious recipes!</p>
+            <div class="empty-state">
+                <i class="fas fa-heart-broken fa-3x mb-3 text-white opacity-75"></i>
+                <h4 class="mb-2">No recipes saved yet 😢</h4>
+                <p class="text-white-50 mb-4">Save some delicious recipes from the search page!</p>
+                <a href="/" class="btn btn-light btn-lg">
+                    <i class="fas fa-search me-2"></i>Find Recipes
+                </a>
             </div>
         {% endif %}
     </div>
 
-</div>
+    <script>
+        // ✅ PERFECTLY WORKING DELETE FUNCTION
+        function deleteRecipe(id) {
+            if (!confirm(`Remove "${document.querySelector(`[onclick="deleteRecipe(${id})"]`).closest('.card').querySelector('.card-title').textContent}" from cookbook?`)) {
+                return;
+            }
 
-<script>
-function deleteRecipe(id) {
-    if (!confirm("Remove this recipe?")) return;
+            const button = event.target.closest('.btn-remove');
+            const originalText = button.innerHTML;
+            
+            // Show loading
+            button.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Removing...';
+            button.disabled = true;
 
-    fetch(`/delete_recipe/${id}`, {
-        method: 'POST'
-    })
-    .then(res => res.json())
-    .then(data => {
-        alert(data.message);
-        location.reload();
-    })
-    .catch(err => {
-        console.error(err);
-        alert("Error deleting ❌");
-    });
-}
-</script>
-
+            fetch(`/delete_recipe/${id}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Delete failed');
+                return response.json();
+            })
+            .then(data => {
+                alert(data.message);
+                if (data.message.includes('Removed')) {
+                    // Remove card from DOM instantly
+                    button.closest('.col-md-4, .col-sm-6, .col-12').remove();
+                    
+                    // Update count
+                    const count = document.querySelector('.title');
+                    let currentCount = parseInt(count.textContent.match(/\d+/)[0]) - 1;
+                    count.textContent = `❤️ My Saved Recipes (${currentCount})`;
+                    
+                    // Show empty state if no recipes left
+                    if (currentCount === 0) {
+                        location.reload();
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Delete error:', error);
+                alert('Error removing recipe. Please try again.');
+            })
+            .finally(() => {
+                button.innerHTML = originalText;
+                button.disabled = false;
+            });
+        }
+    </script>
 </body>
 </html>

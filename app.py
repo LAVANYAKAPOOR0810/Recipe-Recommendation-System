@@ -190,12 +190,11 @@ def save_recipe():
     if existing:
         return jsonify({"message": "Already saved ⚠️"})
 
-
     new_entry = Cookbook(
         user_id=session['user_id'],
         recipe_name=data.get('name'),
         ingredients=data.get('ingredients'),
-        image=data.get('image')   # ✅ ADD THIS
+        image=data.get('image')   # ✅ FIX HERE
     )
 
     db.session.add(new_entry)
@@ -311,6 +310,15 @@ def generate_instructions(name, ingredients):
 
     return response.choices[0].message.content
 
+# ✅ ADD THIS ROUTE after the home() function
+
+@app.route('/clear_search')
+def clear_search():
+    if 'user_id' in session:
+        # Clear search-related session data
+        session.pop('recommendations', None)
+        session.pop('form_data', None)
+    return redirect(url_for('home'))
 
 @app.route('/delete_recipe/<int:id>', methods=['POST'])
 def delete_recipe(id):
@@ -339,4 +347,4 @@ if __name__ == '__main__':
     with app.app_context():
         db.create_all()   # 🔥 creates DB if not exists
 
-    app.run(debug=True)
+    app.run(debug=True , port=5001)
