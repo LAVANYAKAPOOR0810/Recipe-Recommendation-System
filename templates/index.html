@@ -33,7 +33,7 @@
             box-shadow: 0 35px 70px rgba(0, 0, 0, 0.2);
         }
         
-        .form-control {
+        .form-control, .form-select {
             border-radius: 15px;
             border: 2px solid rgba(102, 126, 234, 0.2);
             padding: 15px 20px;
@@ -42,7 +42,7 @@
             font-size: 1rem;
         }
         
-        .form-control:focus {
+        .form-control:focus, .form-select:focus {
             border-color: #11998e;
             box-shadow: 0 0 0 0.25rem rgba(17, 153, 142, 0.15);
             background: white;
@@ -115,19 +115,11 @@
         }
         
         @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
-        .fade-in-up {
-            animation: fadeInUp 0.6s ease forwards;
-        }
+        .fade-in-up { animation: fadeInUp 0.6s ease forwards; }
 
         .navbar .btn {
             border-radius: 12px;
@@ -142,34 +134,22 @@
 
         #bg-video {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             object-fit: cover;
             z-index: -10;
         }
 
         .video-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.3);
             z-index: -5;
         }
 
-        .container {
-            position: relative;
-            z-index: 1;
-        }
-
-        html, body {
-            margin: 0;
-            padding: 0;
-            background: transparent !important;
-        }
+        .container { position: relative; z-index: 1; }
+        html, body { margin: 0; padding: 0; background: transparent !important; }
     </style>
 </head>
 <body>
@@ -199,47 +179,77 @@
                 </div>
             </nav>
 
+            <!-- ✅ FIXED FORM STRUCTURE -->
             <form method="POST">
                 <div class="row g-4">
+                    <!-- Nutrition Inputs -->
                     <div class="col-lg-3 col-md-6">
                         <label class="form-label fw-semibold">Calories</label>
-                        <input type="number" class="form-control" name="calories" min="0" step="any" value="{{ form_data.get('calories', '') }}" required>
+                        <input type="number" class="form-control" name="calories" min="0" step="any" 
+                               value="{{ form_data.get('calories', '') }}" required>
                     </div>
                     <div class="col-lg-3 col-md-6">
                         <label class="form-label fw-semibold">Fat (g)</label>
-                        <input type="number" class="form-control" name="fat" min="0" step="any" value="{{ form_data.get('fat', '') }}" required>
+                        <input type="number" class="form-control" name="fat" min="0" step="any" 
+                               value="{{ form_data.get('fat', '') }}" required>
                     </div>
                     <div class="col-lg-3 col-md-6">
                         <label class="form-label fw-semibold">Carbs (g)</label>
-                        <input type="number" class="form-control" name="carbohydrates" min="0" step="any" value="{{ form_data.get('carbohydrates', '') }}" required>
+                        <input type="number" class="form-control" name="carbohydrates" min="0" step="any" 
+                               value="{{ form_data.get('carbohydrates', '') }}" required>
                     </div>
                     <div class="col-lg-3 col-md-6">
                         <label class="form-label fw-semibold">Protein (g)</label>
-                        <input type="number" class="form-control" name="protein" min="0" step="any" value="{{ form_data.get('protein', '') }}" required>
+                        <input type="number" class="form-control" name="protein" min="0" step="any" 
+                               value="{{ form_data.get('protein', '') }}" required>
                     </div>
                     <div class="col-lg-3 col-md-6">
                         <label class="form-label fw-semibold">Cholesterol</label>
-                        <input type="number" class="form-control" name="cholesterol" min="0" step="any" value="{{ form_data.get('cholesterol', '') }}" required>
+                        <input type="number" class="form-control" name="cholesterol" min="0" step="any" 
+                               value="{{ form_data.get('cholesterol', '') }}" required>
                     </div>
                     <div class="col-lg-3 col-md-6">
                         <label class="form-label fw-semibold">Sodium (mg)</label>
-                        <input type="number" class="form-control" name="sodium" min="0" step="any" value="{{ form_data.get('sodium', '') }}" required>
+                        <input type="number" class="form-control" name="sodium" min="0" step="any" 
+                               value="{{ form_data.get('sodium', '') }}" required>
                     </div>
                     <div class="col-lg-3 col-md-6">
                         <label class="form-label fw-semibold">Fiber (g)</label>
-                        <input type="number" class="form-control" name="fiber" min="0" step="any" value="{{ form_data.get('fiber', '') }}" required>
+                        <input type="number" class="form-control" name="fiber" min="0" step="any" 
+                               value="{{ form_data.get('fiber', '') }}" required>
                     </div>
-                    <div class="col-lg-3 col-md-6">
+                    
+                    <!-- ✅ FIXED: Ingredients & Cuisine IN ROW -->
+                    <div class="col-lg-4 col-md-6">
                         <label class="form-label fw-semibold">Ingredients</label>
                         <input type="text" class="form-control" name="ingredients" 
-                               placeholder="chicken, rice, veggies..." value="{{ form_data.get('ingredients', '') }}" required>
+                               placeholder="chicken, rice, veggies..." 
+                               value="{{ form_data.get('ingredients', '') }}" required>
                     </div>
-                </div>
-                
-                <div class="text-center mt-5">
-                    <button type="submit" class="btn btn-recommend btn-lg px-5 text-white">
-                        <i class="fas fa-magic me-3"></i>Find My Perfect Recipes
-                    </button>
+                    <div class="col-lg-4 col-md-6">
+                        <label class="form-label fw-semibold">Cuisine</label>
+                        <select class="form-control" name="cuisine">
+                            <option value="">Any Cuisine</option>
+                            <option value="indian" {% if form_data.get('cuisine') == 'indian' %}selected{% endif %}>🇮🇳 Indian</option>
+                            <option value="chinese" {% if form_data.get('cuisine') == 'chinese' %}selected{% endif %}>🥡 Chinese</option>
+                            <option value="italian" {% if form_data.get('cuisine') == 'italian' %}selected{% endif %}>🍝 Italian</option>
+                            <option value="mexican" {% if form_data.get('cuisine') == 'mexican' %}selected{% endif %}>🌮 Mexican</option>
+                            <option value="thai" {% if form_data.get('cuisine') == 'thai' %}selected{% endif %}>🍜 Thai</option>
+                            <option value="japanese" {% if form_data.get('cuisine') == 'japanese' %}selected{% endif %}>🍣 Japanese</option>
+                            <option value="mediterranean" {% if form_data.get('cuisine') == 'mediterranean' %}selected{% endif %}>🥗 Mediterranean</option>
+                            <option value="american" {% if form_data.get('cuisine') == 'american' %}selected{% endif %}>🍔 American</option>
+                            <option value="french" {% if form_data.get('cuisine') == 'french' %}selected{% endif %}>🥐 French</option>
+                            <option value="korean" {% if form_data.get('cuisine') == 'korean' %}selected{% endif %}>🍲 Korean</option>
+                            <option value="middle_eastern" {% if form_data.get('cuisine') == 'middle_eastern' %}selected{% endif %}>🥙 Middle Eastern</option>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-recommend btn-lg px-5 text-white">
+                                <i class="fas fa-magic me-3"></i>Find My Perfect Recipes
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </form>
         </div>
@@ -259,73 +269,68 @@
             
             <div class="row g-4">
                 {% for recipe in recommendations %}
-<div class="col-xl-4 col-lg-6 col-md-6 col-sm-12">
-    <div class="recipe-card h-100">
-        <!-- Header with image and link -->
-        <div class="position-relative">
-            <a href="/recipe/{{ recipe.recipe_name | urlencode }}" class="stretched-link">
-                <img src="{{ recipe.image_url }}" 
-                     class="recipe-image"
-                     onerror="this.src='https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400'">
-                <!-- Dark gradient overlay -->
-                <div class="position-absolute top-0 w-100 h-100"
-                     style="background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.7)); z-index: 1;">
+                <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                    <div class="recipe-card h-100">
+                        <div class="position-relative">
+                            <a href="/recipe/{{ recipe.recipe_name | urlencode }}" class="stretched-link">
+                                <img src="{{ recipe.image_url }}" 
+                                     class="recipe-image"
+                                     onerror="this.src='https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400'">
+                                <div class="position-absolute top-0 w-100 h-100"
+                                     style="background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.7)); z-index: 1;"></div>
+                                <div class="nutrition-badge cal-{{ 'low' if recipe.calories < 400 else 'medium' if recipe.calories < 600 else 'high' }}" style="z-index: 2;">
+                                    🔥 {{ recipe.calories|int }} kcal
+                                </div>
+                                <div class="position-absolute bottom-0 start-0 p-3 text-white" style="z-index: 2;">
+                                    <small>AI Match</small>
+                                    <h5 class="mb-0 fw-bold">{{ 95 - loop.index * 3 }}%</h5>
+                                </div>
+                            </a>
+                        </div>
+                        
+                        <div class="p-4">
+                            <h5 class="fw-bold mb-2">{{ recipe.recipe_name }}</h5>
+                            
+                            <div class="mb-3">
+                                {% if recipe.protein > 20 %}
+                                    <span class="badge bg-success me-1">💪 High Protein</span>
+                                {% endif %}
+                                {% if recipe.calories < 400 %}
+                                    <span class="badge bg-info me-1">🥗 Low Cal</span>
+                                {% endif %}
+                                <span class="badge bg-dark me-1">🍴 Quick Meal</span>
+                                {% if recipe.cuisine and recipe.cuisine != 'other' %}
+                                <span class="badge bg-warning text-dark px-3 py-2 fs-6 fw-semibold">
+                                    🌍 {{ recipe.cuisine | replace('_', ' ') | title }}
+                                </span>
+                                {% endif %}
+                            </div>
+                            
+                            <p class="text-muted small mb-3" style="line-height: 1.5;">
+                                {{ recipe.ingredients_list[:120] }}...
+                            </p>
+                            
+                            <div class="mb-3">
+                                <small class="text-muted">Protein</small>
+                                <div class="progress mb-2" style="height:6px;">
+                                    <div class="progress-bar bg-success" style="width: {{ [recipe.protein|float, 100]|min }}%"></div>
+                                </div>
+                                <small class="text-muted">Carbs</small>
+                                <div class="progress mb-2" style="height:6px;">
+                                    <div class="progress-bar bg-primary" style="width: {{ [recipe.carbohydrates|float, 100]|min }}%"></div>
+                                </div>
+                            </div>
+                            
+                            <button class="btn btn-success w-100 fw-semibold save-to-cookbook"
+                                    data-name="{{ recipe.recipe_name | e }}"
+                                    data-ingredients="{{ recipe.ingredients_list | e }}"
+                                    data-image="{{ recipe.image_url | e }}">
+                                ❤️ Save to Cookbook
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <!-- Nutrition badge -->
-                <div class="nutrition-badge cal-{{ 'low' if recipe.get('calories', 500) < 400 else 'medium' if recipe.get('calories', 500) < 600 else 'high' }}" style="z-index: 2;">
-                    🔥 {{ recipe.get('calories', 500)|int }} kcal
-                </div>
-                <!-- Match score -->
-                <div class="position-absolute bottom-0 start-0 p-3 text-white" style="z-index: 2;">
-                    <small>AI Match</small>
-                    <h5 class="mb-0 fw-bold">{{ 95 - loop.index * 3 }}%</h5>
-                </div>
-            </a>
-        </div>
-        
-        <!-- Content - NO stretched-link interference -->
-        <div class="p-4">
-            <h5 class="fw-bold mb-2">{{ recipe.recipe_name }}</h5>
-            
-            <!-- Tags -->
-            <div class="mb-3">
-                {% if recipe.get('protein', 0) > 20 %}
-                    <span class="badge bg-success me-1">💪 High Protein</span>
-                {% endif %}
-                {% if recipe.get('calories', 500) < 400 %}
-                    <span class="badge bg-info me-1">🥗 Low Cal</span>
-                {% endif %}
-                <span class="badge bg-dark">🍴 Quick Meal</span>
-            </div>
-            
-            <!-- Ingredients preview -->
-            <p class="text-muted small mb-3" style="line-height: 1.5;">
-                {{ recipe.ingredients_list[:120] }}...
-            </p>
-            
-            <!-- Nutrition bars -->
-            <div class="mb-3">
-                <small class="text-muted">Protein</small>
-                <div class="progress mb-2" style="height:6px;">
-                    <div class="progress-bar bg-success" style="width: {{ [recipe.get('protein',0), 100]|min }}%"></div>
-                </div>
-                <small class="text-muted">Carbs</small>
-                <div class="progress mb-2" style="height:6px;">
-                    <div class="progress-bar bg-primary" style="width: {{ [recipe.get('carbohydrates',0), 100]|min }}%"></div>
-                </div>
-            </div>
-            
-            <!-- ✅ PERFECT SAVE BUTTON -->
-            <button class="btn btn-success w-100 fw-semibold save-to-cookbook"
-                    data-name="{{ recipe.recipe_name | e }}"
-                    data-ingredients="{{ recipe.ingredients_list | e }}"
-                    data-image="{{ recipe.image_url | e }}">
-                ❤️ Save to Cookbook
-            </button>
-        </div>
-    </div>
-</div>
-{% endfor %}
+                {% endfor %}
             </div>
         </div>
         {% endif %}
@@ -346,13 +351,13 @@
         
         // Form submit loading
         document.querySelector('form')?.addEventListener('submit', function() {
-            this.querySelector('button[type="submit"]').innerHTML = 
-                '<i class="fas fa-spinner fa-spin me-2"></i>Finding Recipes...';
+            const btn = this.querySelector('button[type="submit"]');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Finding Recipes...';
+            btn.disabled = true;
         });
 
-        // ✅ PERFECTLY WORKING SAVE TO COOKBOOK FUNCTION
+        // Save to cookbook
         document.addEventListener('DOMContentLoaded', function() {
-            // Add click handlers to all save buttons
             document.querySelectorAll('.save-to-cookbook').forEach(button => {
                 button.addEventListener('click', function(e) {
                     e.preventDefault();
@@ -362,7 +367,6 @@
                     const ingredients = this.dataset.ingredients;
                     const image = this.dataset.image;
                     
-                    // Show loading
                     const originalText = this.innerHTML;
                     this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Saving...';
                     this.disabled = true;
@@ -379,10 +383,7 @@
                             image: image
                         })
                     })
-                    .then(response => {
-                        if (!response.ok) throw new Error('Network error');
-                        return response.json();
-                    })
+                    .then(response => response.json())
                     .then(data => {
                         alert(data.message);
                         if (data.message.includes('Saved')) {
@@ -406,15 +407,5 @@
             });
         });
     </script>
-
-    <!-- Modal (if needed) -->
-    <div class="modal fade" id="recipeModal" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content p-4">
-                <h3 id="modalTitle"></h3>
-                <p id="modalIngredients"></p>
-            </div>
-        </div>
-    </div>
 </body>
 </html>
