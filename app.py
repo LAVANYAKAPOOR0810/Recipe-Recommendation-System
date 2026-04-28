@@ -984,6 +984,53 @@ recipes_data = pd.DataFrame(DEMO_RECIPES)
 # ======================
 # 🔐 AUTH (unchanged)
 # ======================
+
+
+
+import google.generativeai as genai
+import os
+
+genai.configure(api_key="AIzaSyAoDQlmaHcfn_7vFddViex6oKAdeOJcT6o")
+
+import google.generativeai as genai
+
+# for m in genai.list_models():
+#     print(m.name)
+model = genai.GenerativeModel("models/gemini-2.5-flash")
+@app.route('/chat', methods=['GET', 'POST'])
+def chat():
+    if 'user_id' not in session:
+        return redirect('/login')
+
+    # 👇 If user opens page
+    if request.method == 'GET':
+        return render_template('chat.html')
+
+    # 👇 If frontend sends message
+    if request.method == 'POST':
+        user_message = request.json.get('message', '').strip()
+
+        if not user_message:
+            return jsonify({'response': 'Ask something! 🍳'})
+
+        try:
+            response = model.generate_content(user_message)
+            return jsonify({'response': response.text})
+
+        except Exception as e:
+            print("🔥 ERROR:", e)
+            return jsonify({'response': "Server error 😅"})
+
+
+
+
+
+
+
+
+
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
