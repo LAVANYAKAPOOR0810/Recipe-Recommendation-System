@@ -932,6 +932,8 @@ from urllib.parse import unquote
 import pandas as pd
 import numpy as np
 import os
+from dotenv import load_dotenv
+load_dotenv()
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -990,8 +992,7 @@ recipes_data = pd.DataFrame(DEMO_RECIPES)
 import google.generativeai as genai
 import os
 
-genai.configure(api_key="AIzaSyAoDQlmaHcfn_7vFddViex6oKAdeOJcT6o")
-
+genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 import google.generativeai as genai
 
 # for m in genai.list_models():

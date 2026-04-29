@@ -5,6 +5,24 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <style>
+/* ✨ BEAUTIFUL TOAST NOTIFICATIONS */
+.toast-container {
+    position: fixed; top: 2rem; right: 2rem; z-index: 99999; max-width: 400px;
+}
+.toast-custom {
+    backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 20px !important; box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    font-weight: 500; min-height: 60px; display: flex !important; align-items: center;
+}
+.toast-custom .toast-body { padding: 1.2rem 1.5rem; flex-grow: 1; }
+.toast-custom.success { background: linear-gradient(135deg, rgba(17,153,142,0.95), rgba(56,239,125,0.9)) !important; color: white !important; }
+.toast-custom.error { background: linear-gradient(135deg, rgba(239,68,68,0.95), rgba(220,38,38,0.9)) !important; color: white !important; }
+.toast-custom.info { background: linear-gradient(135deg, rgba(59,130,246,0.95), rgba(96,165,250,0.9)) !important; color: white !important; }
+.toast-icon { width: 50px; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; border-radius: 18px 0 0 18px; }
+.toast-custom.success .toast-icon, .toast-custom.error .toast-icon, .toast-custom.info .toast-icon { background: rgba(255,255,255,0.2); }
+.toast-close { opacity: 0.7; font-size: 1.2rem; padding: 0 0.5rem; }
+@media (max-width: 768px) { .toast-container { top: 1rem; right: 1rem; left: 1rem; max-width: none; } }
+
         body {
             background: linear-gradient(135deg, #11998e, #38ef7d);
             min-height: 100vh;
@@ -61,6 +79,9 @@
 </head>
 
 <body class="p-4">
+    <!-- ✅ FIXED: TOAST CONTAINER ADDED HERE -->
+    <div class="toast-container" id="toastContainer"></div>
+
     <div class="container glass-card">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="title">❤️ My Saved Recipes ({{ recipes|length }})</h2>
@@ -72,7 +93,6 @@
                 {% for recipe in recipes %}
                 <div class="col-md-4 col-sm-6 col-12">
                     <div class="card recipe-card h-100">
-                        <!-- ✅ FIXED IMAGE DISPLAY -->
                         <img src="{{ recipe.image or 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&h=200&fit=crop' }}" 
                              class="recipe-img w-100" 
                              alt="{{ recipe.recipe_name }}"
@@ -84,7 +104,6 @@
                                 {{ (recipe.ingredients or 'No ingredients listed')[:120] }}...
                             </p>
                             
-                            <!-- ✅ FIXED DELETE BUTTON -->
                             <button class="btn btn-danger w-100 btn-remove mt-auto"
                                     onclick="deleteRecipe({{ recipe.id }})">
                                 <i class="fas fa-trash me-1"></i>Remove
@@ -106,17 +125,42 @@
         {% endif %}
     </div>
 
+    <!-- ✅ SINGLE SCRIPT - NO DUPLICATES -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // ✅ PERFECTLY WORKING DELETE FUNCTION
-        function deleteRecipe(id) {
-            if (!confirm(`Remove "${document.querySelector(`[onclick="deleteRecipe(${id})"]`).closest('.card').querySelector('.card-title').textContent}" from cookbook?`)) {
-                return;
-            }
+        // ✨ TOAST FUNCTION
+        let toastCounter = 0;
+        function showToast(message, type = 'info', duration = 3000) {
+            const toastId = 'toast-' + (toastCounter++);
+            const icon = type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle';
+            
+            const toastHtml = `
+                <div id="${toastId}" class="toast toast-custom ${type} align-items-center text-white bg-transparent border-0 fade show" role="alert">
+                    <div class="toast-icon"><i class="fas ${icon} text-white"></i></div>
+                    <div class="toast-body">${message}</div>
+                    <button type="button" class="btn-close btn-close-white me-2 toast-close" data-bs-dismiss="toast"></button>
+                </div>
+            `;
+            
+            document.getElementById('toastContainer').insertAdjacentHTML('beforeend', toastHtml);
+            
+            const toastElement = document.getElementById(toastId);
+            const bsToast = new bootstrap.Toast(toastElement, { animation: true, autohide: true, delay: duration });
+            bsToast.show();
+            
+            toastElement.addEventListener('hidden.bs.toast', () => toastElement.remove());
+        }
 
+        // ✅ SINGLE WORKING DELETE FUNCTION
+        function deleteRecipe(id) {
+            const recipeName = document.querySelector(`[onclick="deleteRecipe(${id})"]`).closest('.card').querySelector('.card-title').textContent.trim();
             const button = event.target.closest('.btn-remove');
             const originalText = button.innerHTML;
             
-            // Show loading
+            // ✅ Show confirm toast
+            showToast(`🗑️ Removing "${recipeName}"...`, 'error', 2000);
+            
+            // Immediately start delete (no confirm dialog)
             button.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Removing...';
             button.disabled = true;
 
@@ -128,29 +172,32 @@
                 }
             })
             .then(response => {
-                if (!response.ok) throw new Error('Delete failed');
+                if (!response.ok) throw new Error('Delete failed: ' + response.status);
                 return response.json();
             })
             .then(data => {
-                alert(data.message);
-                if (data.message.includes('Removed')) {
-                    // Remove card from DOM instantly
+                console.log('Delete response:', data); // Debug
+                showToast(data.message || 'Recipe removed!', data.message?.includes('Removed') ? 'success' : 'info');
+                
+                if (data.message && data.message.includes('Removed')) {
+                    // Remove card instantly
                     button.closest('.col-md-4, .col-sm-6, .col-12').remove();
                     
                     // Update count
                     const count = document.querySelector('.title');
-                    let currentCount = parseInt(count.textContent.match(/\d+/)[0]) - 1;
-                    count.textContent = `❤️ My Saved Recipes (${currentCount})`;
-                    
-                    // Show empty state if no recipes left
-                    if (currentCount === 0) {
-                        location.reload();
+                    if (count) {
+                        let currentCount = parseInt(count.textContent.match(/\d+/)?.[0] || 0) - 1;
+                        count.textContent = `❤️ My Saved Recipes (${currentCount})`;
+                        
+                        if (currentCount === 0) {
+                            location.reload();
+                        }
                     }
                 }
             })
             .catch(error => {
                 console.error('Delete error:', error);
-                alert('Error removing recipe. Please try again.');
+                showToast('❌ Error: ' + error.message, 'error');
             })
             .finally(() => {
                 button.innerHTML = originalText;
